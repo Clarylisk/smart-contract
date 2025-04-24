@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import {Script} from "@forge-std/Script.sol";
+import {CreatorHubFactory} from "@contract/CreatorHubFactory.sol";
+import {CreatorHub} from "@contract/CreatorHub.sol";
+import {console} from "@forge-std/console.sol";
+
+contract DeployCreatorFactory is Script {
+    function run() public returns (CreatorHubFactory) {
+        string memory rpc = vm.envString("RPC_URL");
+        uint256 pk = vm.envUint("PRIVATE_KEY");
+
+        vm.createFork(rpc);
+        vm.startBroadcast(pk);
+
+        // Deploy and verify Creator implementation first
+      
+        CreatorHub creatorImpl = new CreatorHub(address(1), 0, address(1));
+
+        console.log("Creator implementation deployed at:", address(creatorImpl));
+
+        // Deploy factory with initial fee
+        CreatorHubFactory factory = new CreatorHubFactory(0.0001 ether);
+
+        vm.stopBroadcast();
+        return factory;
+    }
+}
